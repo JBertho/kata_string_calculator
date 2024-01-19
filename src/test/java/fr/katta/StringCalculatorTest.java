@@ -92,4 +92,10 @@ class StringCalculatorTest {
         Assertions.assertEquals("negatives not allowed : [-5, -20, -29]", negativeNumberException.getMessage());
     }
 
+    @Test
+    void should_ignore_number_higher_then_1000() throws ParsingException {
+        Integer sut = stringCalculator.add("1000;1002;58");
+        Assertions.assertEquals(58, sut);
+    }
+
 }

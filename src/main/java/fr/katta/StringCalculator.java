@@ -15,6 +15,7 @@ public class StringCalculator {
     public static final String REGEX = String.join(OR, SEPARATORS);
 
     public static final String START_WITH_REGEX = "^//(.)\n";
+    public static final int MAX_VALUE = 1000;
 
 
     public Integer add(String numbers) throws ParsingException {
@@ -32,6 +33,7 @@ public class StringCalculator {
 
         return Arrays.stream(numberStrings)
                 .mapToInt(Integer::valueOf)
+                .filter(value -> value < MAX_VALUE)
                 .sum();
     }
 
