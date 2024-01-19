@@ -98,4 +98,10 @@ class StringCalculatorTest {
         Assertions.assertEquals(58, sut);
     }
 
+    @Test
+    void should_calculate_sum_when_custom_delimiters_has_any_length() throws ParsingException {
+        Integer sut = stringCalculator.add("//[***]\n4***5***58");
+        Assertions.assertEquals(58, sut);
+    }
+
 }

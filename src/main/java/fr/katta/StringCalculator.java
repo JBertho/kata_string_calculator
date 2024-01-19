@@ -14,7 +14,7 @@ public class StringCalculator {
     public static final String OR = "|";
     public static final String REGEX = String.join(OR, SEPARATORS);
 
-    public static final String START_WITH_REGEX = "^//(.)\n";
+    public static final String START_WITH_REGEX = "^//(.+)\n";
     public static final int MAX_VALUE = 1000;
 
 
@@ -42,7 +42,7 @@ public class StringCalculator {
         Pattern compile = Pattern.compile(START_WITH_REGEX);
         Matcher matcher = compile.matcher(numbers);
         if (matcher.find()) {
-            regex += OR + numbers.charAt(2);
+            regex += OR + matcher.group(1);
             numbers = numbers.substring(4);
         }
 
