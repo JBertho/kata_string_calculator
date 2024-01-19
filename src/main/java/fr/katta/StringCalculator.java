@@ -5,42 +5,63 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class StringCalculator {
     public static final String FINAL_SEPARATOR = ";";
     public static final List<String> SEPARATORS =
             List.of(FINAL_SEPARATOR, "\n", "l");
-    public static final String REGEX = String.join("|", SEPARATORS);
+    public static final String OR = "|";
+    public static final String REGEX = String.join(OR, SEPARATORS);
 
-    public static final String START_WITH_REGEX = "//.\n";
+    public static final String START_WITH_REGEX = "^//(.)\n";
 
 
     public Integer add(String numbers) throws ParsingException {
         if (Objects.isNull(numbers) || numbers.isBlank()) {
             return 0;
         }
-        String regex = REGEX;
-        String finalSeparator = FINAL_SEPARATOR;
-        Pattern compile = Pattern.compile("^//(.)\n");
-        Matcher matcher = compile.matcher(numbers);
-        if (matcher.find()) {
-            regex = numbers.charAt(2) + "";
-            finalSeparator = regex;
-            numbers = numbers.substring(4);
+        String formatedNumbers = formatNumberInput(numbers);
 
-        }
-
-        String formatedNumbers = numbers.replaceAll(regex, finalSeparator);
-
-        if (formatedNumbers.contains(finalSeparator + finalSeparator)) {
+        if (formatedNumbers.contains(FINAL_SEPARATOR + FINAL_SEPARATOR)) {
             throw new ParsingException();
         }
 
-        String[] split = formatedNumbers.split(regex);
-        return Arrays.stream(split)
+        String[] numberStrings = formatedNumbers.split(FINAL_SEPARATOR);
+        verifyNegativeNumber(numberStrings);
+
+        return Arrays.stream(numberStrings)
                 .mapToInt(Integer::valueOf)
                 .sum();
-
-
     }
+
+    private static String formatNumberInput(String numbers) {
+        String regex = REGEX;
+        Pattern compile = Pattern.compile(START_WITH_REGEX);
+        Matcher matcher = compile.matcher(numbers);
+        if (matcher.find()) {
+            regex += OR + numbers.charAt(2);
+            numbers = numbers.substring(4);
+        }
+
+        return numbers.replaceAll(regex, FINAL_SEPARATOR);
+    }
+
+    private static void verifyNegativeNumber(String[] numberStrings) {
+        IntStream numberStream = Arrays.stream(numberStrings).mapToInt(Integer::valueOf);
+        List<Integer> negativeNumbers = numberStream.filter(value -> value < 0).boxed().toList();
+        if (!negativeNumbers.isEmpty()) {
+            throw new NegativeNumberException(negativeNumbers);
+        }
+    }
+}
+
+class NegativeNumberException extends RuntimeException {
+
+    public static final String NEGATIVE_NUMBER_MESSAGE = "negatives not allowed : ";
+
+    NegativeNumberException(List<Integer> negativeNumbers) {
+        super(NEGATIVE_NUMBER_MESSAGE + negativeNumbers.toString());
+    }
+
 }

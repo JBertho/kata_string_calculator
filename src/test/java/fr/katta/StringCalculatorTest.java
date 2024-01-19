@@ -67,15 +67,29 @@ class StringCalculatorTest {
     @ParameterizedTest
     @ValueSource(strings = {"1;2;\n3","1;2;;3","1;2\n\n3", "1;2l\n3"})
     void should_throw_error_when_string_contains_two_separator_chain(String numbers) {
-        Assertions.assertThrows(ParsingException.class, () -> {
-            stringCalculator.add(numbers);
-        });
+        Assertions.assertThrows(ParsingException.class, () -> stringCalculator.add(numbers));
     }
     
     @Test
     void should_return_sum_when_containing_custom_delimiter() throws ParsingException {
         Integer sut = stringCalculator.add("//_\n5_89");
         Assertions.assertEquals(94,sut);
+    }
+
+    @Test
+    void should_thrown_negative_exception_when_parameter_has_negative_number() {
+        NegativeNumberException negativeNumberException = Assertions.assertThrows(NegativeNumberException.class, () -> stringCalculator.add("-5;38"));
+
+        Assertions.assertEquals("negatives not allowed : [-5]", negativeNumberException.getMessage());
+    }
+
+    @Test
+    void should_thrown_negative_exception_when_parameter_has_multiple_negative_number() {
+        NegativeNumberException negativeNumberException =
+                Assertions.assertThrows(NegativeNumberException.class,
+                        () -> stringCalculator.add("-5;38;-20;-29"));
+
+        Assertions.assertEquals("negatives not allowed : [-5, -20, -29]", negativeNumberException.getMessage());
     }
 
 }
