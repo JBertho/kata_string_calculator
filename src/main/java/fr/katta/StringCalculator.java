@@ -45,20 +45,9 @@ public class StringCalculator {
             String newSeparatorList = matcher.group(1);
 
             if (newSeparatorList.contains("[") && newSeparatorList.contains("]")) {
-
-                Pattern delimiterPattern = Pattern.compile("\\[(.*?)\\]");
-                Matcher delimiterMatcher = delimiterPattern.matcher(newSeparatorList);
-
-                while (delimiterMatcher.find()) {
-                    String newSeparator = delimiterMatcher.group();
-                    if (newSeparator.contains("[") && newSeparator.contains("]")) {
-                        newSeparator = newSeparator.substring(1, newSeparator.length() - 1);
-                    }
-                    regex += OR + newSeparator;
-                }
+                regex = addMultipleNewSeparator(regex, newSeparatorList);
             } else {
                 regex += OR + newSeparatorList;
-
             }
 
             int charactersToRemove = newSeparatorList.length() + 3;
@@ -67,6 +56,18 @@ public class StringCalculator {
         }
 
         return numbers.replaceAll(regex, FINAL_SEPARATOR);
+    }
+
+    private static String addMultipleNewSeparator(String regex, String newSeparatorList) {
+        Pattern delimiterPattern = Pattern.compile("\\[(.*?)\\]");
+        Matcher delimiterMatcher = delimiterPattern.matcher(newSeparatorList);
+
+        while (delimiterMatcher.find()) {
+            String newSeparator = delimiterMatcher.group();
+            newSeparator = newSeparator.substring(1, newSeparator.length() - 1);
+            regex += OR + newSeparator;
+        }
+        return regex;
     }
 
     private static void verifyNegativeNumber(String[] numberStrings) {

@@ -110,4 +110,16 @@ class StringCalculatorTest {
         Assertions.assertEquals(6, sut);
     }
 
+    @Test
+    void should_calculate_sum_when_having_multiple_separators_with_multiple_size() throws ParsingException {
+        Integer sut = stringCalculator.add("//[cc][%%%][s]\n1cc2%%%3s6");
+        Assertions.assertEquals(12, sut);
+    }
+
+    @Test
+    void should_calculate_sum_when_same_separator_multiple_time() throws ParsingException {
+        Integer sut = stringCalculator.add("//[cc][%%%][cc]\n1cc2%%%36");
+        Assertions.assertEquals(39, sut);
+    }
+
 }
