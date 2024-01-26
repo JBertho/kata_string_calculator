@@ -14,7 +14,7 @@ public class StringCalculator {
     public static final String OR = "|";
     public static final String REGEX = String.join(OR, SEPARATORS);
 
-    public static final String START_WITH_REGEX = "^//(.+)\n";
+    public static final String START_WITH_REGEX = "^//((.)|\\[.+\\])\n";
     public static final int MAX_VALUE = 1000;
 
 
@@ -42,8 +42,28 @@ public class StringCalculator {
         Pattern compile = Pattern.compile(START_WITH_REGEX);
         Matcher matcher = compile.matcher(numbers);
         if (matcher.find()) {
-            regex += OR + matcher.group(1);
-            numbers = numbers.substring(4);
+            String newSeparatorList = matcher.group(1);
+
+            if (newSeparatorList.contains("[") && newSeparatorList.contains("]")) {
+
+                Pattern delimiterPattern = Pattern.compile("\\[(.*?)\\]");
+                Matcher delimiterMatcher = delimiterPattern.matcher(newSeparatorList);
+
+                while (delimiterMatcher.find()) {
+                    String newSeparator = delimiterMatcher.group();
+                    if (newSeparator.contains("[") && newSeparator.contains("]")) {
+                        newSeparator = newSeparator.substring(1, newSeparator.length() - 1);
+                    }
+                    regex += OR + newSeparator;
+                }
+            } else {
+                regex += OR + newSeparatorList;
+
+            }
+
+            int charactersToRemove = newSeparatorList.length() + 3;
+
+            numbers = numbers.substring(charactersToRemove);
         }
 
         return numbers.replaceAll(regex, FINAL_SEPARATOR);
